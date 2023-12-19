@@ -33,6 +33,16 @@ class ThreadPool {
             workers.clear();
         }
 
+        bool has_work(){
+            bool poolbusy;
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                poolbusy = !tasks.empty();
+            }
+
+            return poolbusy;
+        }
+
         void initialize_threads(uint32_t thread_count){
             for(uint32_t i = 0; i < thread_count; i++){
                 workers.push_back(std::thread(&ThreadPool::worker, this));
